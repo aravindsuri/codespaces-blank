@@ -20,20 +20,20 @@ def get_financial_data(stock_symbol):
     #print(balance_sheet)
     
     #print(balance_sheet.loc['Current Assets'])
-    current_assets = balance_sheet.loc['Current Assets'].iloc[0] #if 'Total Current Assets' in balance_sheet.index else 'N/A'
+    current_assets = balance_sheet.loc['Current Assets'].iloc[0] if 'Total Current Assets' in balance_sheet.index else 0
     #print(current_assets)
-    current_liabilities = balance_sheet.loc['Current Liabilities'].iloc[0] #if 'Total Current Liabilities' in balance_sheet.index else 'N/A'
+    current_liabilities = balance_sheet.loc['Current Liabilities'].iloc[0] if 'Total Current Liabilities' in balance_sheet.index else 0
     #print(current_liabilities)
-    long_term_debt = balance_sheet.loc['Long Term Debt'].iloc[0] #if 'Long Term Debt' in balance_sheet.index else 'N/A'
+    long_term_debt = balance_sheet.loc['Long Term Debt'].iloc[0] if 'Long Term Debt' in balance_sheet.index else 0
     #print(long_term_debt)
     # Get short-term debt (Current Debt)
     short_term_debt = balance_sheet.loc['Current Debt'].iloc[0] if 'Short Long Term Debt' in balance_sheet.index else 0
     #print(short_term_debt)
     # Get cash and cash equivalents
-    cash_and_equivalents = balance_sheet.loc['Cash And Cash Equivalents'].iloc[0] if 'Cash And Cash Equivalents' in balance_sheet.index else 'N/A'
+    cash_and_equivalents = balance_sheet.loc['Cash And Cash Equivalents'].iloc[0] if 'Cash And Cash Equivalents' in balance_sheet.index else 0
     #print(cash_and_equivalents)
     # Get total assets and accumulated depreciation for fixed assets calculation
-    total_assets = balance_sheet.loc['Total Assets'].iloc[0] if 'Total Assets' in balance_sheet.index else 'N/A'
+    total_assets = balance_sheet.loc['Total Assets'].iloc[0] if 'Total Assets' in balance_sheet.index else 0
     #print(total_assets)
     accumulated_depreciation = stock.cashflow.loc['Depreciation'].iloc[0] if 'Depreciation' in stock.cashflow.index else 0
     #print(accumulated_depreciation)
@@ -80,26 +80,50 @@ def get_financial_data(stock_symbol):
     }
 
 def get_financial_data_for_stocks(stock_list):
+    
     # Create a list to store the results for each stock
     stock_data = []
     
     # Loop through the list of stock symbols
+    count = 0
     for symbol in stock_list:
+        count = count + 1
         data = get_financial_data(symbol)
         stock_data.append(data)
-    
+        if count == 10: 
+            exit 
+
     # Convert the list of dictionaries to a DataFrame
     df = pd.DataFrame(stock_data)
     
     return df
 
+def get_sp500_stocks():
+    # URL for the Wikipedia page containing the S&P 500 list
+    url = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies'
+
+    # Use pandas to read the table from the Wikipedia page
+    sp500_table = pd.read_html(url)[0]
+
+    # Display the first few rows of the dataframe
+    print(sp500_table.head())
+
+    # You can access the tickers like this
+    tickers = sp500_table['Symbol'].tolist()
+    return tickers
+
 
 # List of stock symbols (you can add more symbols here)
-stock_list = ['OXY', 'SLB', 'HAL', 'ANF', 'JBL', 'HRB', 'GILD', 'PFE', 'CVX']  # Add more stock symbols as needed
+stock_list = ['MMM', 'AOS', 'ABT', 'ABBV', 'ACN', 'ADBE', 'AMD', 'AES', 'AFL', 'A']  # Add more stock symbols as needed
+
+tickers = get_sp500_stocks()
+# print(tickers)
+# stock_list = tickers
+
 
 # Get the financial data for the list of stocks
 financial_data_df = get_financial_data_for_stocks(stock_list)
-#financial_data_df.to_csv('financial_data.csv', index=False)
+financial_data_df.to_csv('financial_data.csv', index=False)
 
 # Display the DataFrame as a table
-print(financial_data_df)
+#print(financial_data_df)
