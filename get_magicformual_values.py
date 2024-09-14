@@ -13,7 +13,7 @@ def get_financial_data(stock_symbol):
     #print(financials)
     income = stock.income_stmt
     #print(income.loc['EBIT'])
-    ebit = income.loc['EBIT'].iloc[0] #if 'Ebit' in income.index else 'N/A'
+    ebit = income.loc['EBIT'].iloc[0] if 'EBIT' in income.index else 0
     #print(ebit)
     # Get balance sheet (Current Assets, Current Liabilities, Long Term Debt)
     balance_sheet = stock.balance_sheet
@@ -58,13 +58,16 @@ def get_financial_data(stock_symbol):
     #print(net_fixed_assets)
     # Calculate EBIT to Enterprise Value
     if ebit != 'N/A' and enterprise_value != 'N/A':
-        ebit_to_ev = ebit / enterprise_value
+        ebit_to_ev = round(ebit / enterprise_value, 6)
     else:
         ebit_to_ev = 'N/A'
     #print(ebit_to_ev)
     # Calculate EBIT to (Net Working Capital + Net Fixed Assets)
     if ebit != 'N/A' and net_working_capital != 'N/A' and net_fixed_assets != 'N/A':
-        ebit_to_nwc_nfa = ebit / (net_working_capital + net_fixed_assets)
+        if (net_working_capital + net_fixed_assets) == 0:
+            ebit_to_nwc_nfa = 0
+        else:
+            ebit_to_nwc_nfa = round(ebit / (net_working_capital + net_fixed_assets), 6)
     else:
         ebit_to_nwc_nfa = 'N/A'
     #print(ebit_to_nwc_nfa)
@@ -88,9 +91,10 @@ def get_financial_data_for_stocks(stock_list):
     count = 0
     for symbol in stock_list:
         count = count + 1
+        print(count)
         data = get_financial_data(symbol)
         stock_data.append(data)
-        if count == 10: 
+        if count == 20: 
             exit 
 
     # Convert the list of dictionaries to a DataFrame
@@ -111,14 +115,14 @@ def get_sp500_stocks():
     # You can access the tickers like this
     tickers = sp500_table['Symbol'].tolist()
     return tickers
-
+    
 
 # List of stock symbols (you can add more symbols here)
 stock_list = ['MMM', 'AOS', 'ABT', 'ABBV', 'ACN', 'ADBE', 'AMD', 'AES', 'AFL', 'A']  # Add more stock symbols as needed
 
 tickers = get_sp500_stocks()
 # print(tickers)
-# stock_list = tickers
+stock_list = tickers
 
 
 # Get the financial data for the list of stocks
