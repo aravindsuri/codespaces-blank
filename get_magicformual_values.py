@@ -71,6 +71,10 @@ def get_financial_data(stock_symbol):
     else:
         ebit_to_nwc_nfa = 'N/A'
     #print(ebit_to_nwc_nfa)
+
+    cashflow = stock.cashflow
+    fcf = cashflow.loc['Free Cash Flow'].iloc[0] if 'Free Cash Flow' in cashflow.index else 0
+
     return {
         'stock_symbol': stock_symbol,
         'market_cap': market_cap,
@@ -79,7 +83,8 @@ def get_financial_data(stock_symbol):
         'ebit_to_ev': ebit_to_ev,
         'ebit_to_nwc_nfa': ebit_to_nwc_nfa,
         'net_working_capital': net_working_capital,
-        'net_fixed_assets': net_fixed_assets
+        'net_fixed_assets': net_fixed_assets,
+        'fcf': fcf
     }
 
 def get_financial_data_for_stocks(stock_list):
@@ -118,7 +123,7 @@ def get_sp500_stocks():
     
 
 # List of stock symbols (you can add more symbols here)
-stock_list = ['MMM', 'AOS', 'ABT', 'ABBV', 'ACN', 'ADBE', 'AMD', 'AES', 'AFL', 'A']  # Add more stock symbols as needed
+# stock_list = ['MMM', 'AOS', 'ABT', 'ABBV', 'ACN', 'ADBE', 'AMD', 'AES', 'AFL', 'A']  # Add more stock symbols as needed
 
 tickers = get_sp500_stocks()
 # print(tickers)
